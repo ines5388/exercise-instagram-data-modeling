@@ -11,6 +11,9 @@ class User(Base):
     firstname = Column(String(150), nullable = False)
     lastname = Column(String(150), nullable = False)
     email = Column(String(150), nullable = False)
+    followers = relationship('Follower', backref='user', lazy=True)
+    posts = relationship('Post', backref='user', lazy=True) 
+    comments = relationship('Comment', backref='user', lazy=True)  
 
 class Follower(Base):
     __tablename__ = 'follower'
@@ -23,16 +26,16 @@ class Post(Base):
     __tablename__ = 'post'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
-    user_relationship = relationship(User)
+    comments = relationship('Comment', backref='post', lazy=True) 
+    media = relationship('Media', backref='post', lazy=True) 
 
 class Comment(Base):
     __tablename__ = 'comment'
     id = Column(Integer, primary_key=True)
     comment_text = Column(String(500), nullable = False)
     author_id = Column(Integer, ForeignKey('user.id'))
-    author_relationship = relationship(User)
     post_id = Column(Integer, ForeignKey('post.id'))
-    post_relationship = relationship(Post)
+    
 
 class Media(Base):
     __tablename__ = 'media'
@@ -40,7 +43,6 @@ class Media(Base):
     type = Column(String, nullable = False)
     url = Column(String(250), nullable = False)
     post_id = Column(Integer, ForeignKey('post.id'))
-    post_relationship = relationship(Post)
 
     def to_dict(self):
         return {}
